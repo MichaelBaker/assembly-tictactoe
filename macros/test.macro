@@ -1,0 +1,10 @@
+%macro assert_equal 2
+  cmp %1, %2
+  je ._assert_equal_success
+  ._assert_equal_failure
+    print failure_token, failure_token_len
+    jmp ._assert_equal_end
+  ._assert_equal_success
+    print success_token, success_token_len
+  ._assert_equal_end
+%endmacro

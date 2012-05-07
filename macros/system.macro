@@ -1,0 +1,33 @@
+%define system.numbers.write 0x4
+%define system.numbers.exit  0x1
+
+%define system.stdin  0x0
+%define system.stdout 0x1
+%define system.stderr 0x2
+
+%define system.success 0x0
+
+%macro system.systemcall 1
+  mov eax, %1 ; Set the system call number
+  call kernel
+%endmacro
+
+%macro system.write 3
+  push dword %2            ; How many bytes to print
+  push dword %1            ; A pointer to the bytes to print
+  push dword %3            ; The file descriptor to write to
+  system.systemcall system.numbers.write
+  add esp, 0xc             ; Clean up the stack
+%endmacro
+
+%macro system.exit 1
+  push dword %1 ; Exit code
+  system.systemcall system.numbers.exit
+%endmacro
+
+%macro print 2
+  system.write %1, %2, system.stdout
+%endmacro
+
+section .text
+  extern kernel

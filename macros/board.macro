@@ -1,0 +1,102 @@
+%define empty_token 0x0
+%define x_token     0x1
+%define o_token     0x2
+
+; Takes a pointer to a board
+; Sets eax to the boolean result
+%macro is_empty 1
+  mov eax, %1
+  call _is_empty
+%endmacro
+
+; Arguments:
+;   1 - a pointer to the board
+; Result:
+;   eax - boolean
+%macro is_tie 1
+  mov eax, %1
+  call _is_tie
+%endmacro
+
+; Creates a new board on the stack
+%macro push_board 0
+  sub esp, 0xc
+  push eax
+  lea eax, [esp + 0x4]
+  call _zero_board
+  pop eax
+%endmacro
+
+; Removes a board from the stack
+%macro pop_board 0
+  add esp, 0xc
+%endmacro
+
+; Arguments:
+;   1 - a pointer to the board
+;   2 - the row on which to place the token
+;   3 - the column on which to place the token
+;   4 - the 8-bit token to place
+%macro set_space 4
+  mov byte [%1 + (%2 * 0x3) + %3], %4
+%endmacro
+
+; Arguments:
+;   1 - a pointer to the board
+;   2 - the space on which to place the token
+;   3 - the 8-bit token to place
+%macro set_space 3
+  mov byte [%1 + %2], %3
+%endmacro
+
+; Takes a pointer to a board
+; Sets eax to the boolean result
+%macro x_wins 1
+  mov ecx, x_token
+  mov eax, %1
+  call _token_wins
+%endmacro
+
+%macro o_wins 1
+  mov ecx, o_token
+  mov eax, %1
+  call _token_wins
+%endmacro
+
+; Arguments:
+;   1 - a pointer to the board
+;   2 - the 8 bit token to test against
+; Result:
+;   eax - boolean
+%macro token_wins 2
+  mov ecx, 0x0
+  mov cl, %2
+  mov eax, %1
+  call _token_wins
+%endmacro
+
+; Arguments:
+;   1 - destination board
+;   2 - source board
+%macro copy_board 2
+  push eax
+  push ebx
+  push dword %1
+  push dword %2
+  mov  eax, [esp + 0x4]
+  mov  ebx, [esp]
+  call _copy_board
+  pop ebx
+  pop ebx
+  pop ebx
+  pop eax
+%endmacro
+
+; Arguments:
+;   1 - the 8-bit token to flip
+; Result:
+;   al - the new token
+%macro other_token 1
+  mov al, %1
+  call _other_token
+%endmacro
