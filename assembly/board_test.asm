@@ -261,6 +261,56 @@ test_get_token_O_on_space_eight:
   pop_board
   ret
 
+test_valid_space_is_empty:
+  push ebp
+  mov  ebp, esp
+  push_board
+
+  %define board [ebp - board_size - 0x4]
+  push esp
+
+  is_valid_space board, 0x0
+  assert_equal eax, 0x1
+
+  add esp, 0x4
+  pop_board
+  pop ebp
+  ret
+
+test_space_invalid_when_occupied:
+  push ebp
+  mov ebp, esp
+  push_board
+
+  %define board [ebp - 0x10]
+  push esp
+
+  mov ecx, board
+  set_space ecx, 0x0, x_token
+  is_valid_space board, 0x0
+  assert_equal eax, 0x0
+
+  add esp, 0x4
+  pop_board
+  pop ebp
+  ret
+
+test_space_invalid_when_over_eight:
+  push ebp
+  mov  ebp, esp
+  push_board
+
+  %define board [ebp - board_size - 0x4]
+  push esp
+
+  is_valid_space board, 0x9
+  assert_equal eax, 0x0
+
+  add esp, 0x4
+  pop_board
+  pop ebp
+  ret
+
 main:
   call test_create_board
   call test_x_wins_row_0
@@ -285,5 +335,8 @@ main:
   call test_other_token_o
   call test_get_token_X_on_space_one
   call test_get_token_O_on_space_eight
+  call test_valid_space_is_empty
+  call test_space_invalid_when_occupied
+  call test_space_invalid_when_over_eight
   print newline, newline_len
   system.exit system.success

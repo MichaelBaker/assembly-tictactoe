@@ -7,3 +7,4 @@ section .text
   extern _other_token
   extern _zero_board
   extern _get_token
+  extern _is_valid_space

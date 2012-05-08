@@ -11,6 +11,7 @@ section .text
   global _other_token
   global _zero_board
   global _get_token
+  global _is_valid_space
 
 ; Arguments
 ;   eax - pointer to a board
@@ -169,4 +170,24 @@ _zero_board:
 ;   eax - the token
 _get_token:
   mov eax, [eax + ebx]
+  ret
+
+; Arguments
+;   eax - pointer to a board
+;   ebx - desired space
+; Result
+;   eax - boolean
+_is_valid_space:
+  cmp ebx, 0x8         ; Is the space within bounds?
+  jg .invalid
+
+  get_token eax, ebx
+  cmp eax, empty_token ; Is the space empty?
+  je .valid
+  .invalid
+    mov eax, 0x0
+    jmp .end
+  .valid
+    mov eax, 0x1
+  .end
   ret

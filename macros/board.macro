@@ -1,6 +1,7 @@
 %define empty_token 0x0
 %define x_token     0x1
 %define o_token     0x2
+%define board_size  0xc
 
 ; Takes a pointer to a board
 ; Sets eax to the boolean result
@@ -42,7 +43,7 @@
 %endmacro
 
 ; Arguments:
-;   1 - a pointer to the board
+;   1 - a register with a pointer to the board
 ;   2 - the space on which to place the token
 ;   3 - the 8-bit token to place
 %macro set_space 3
@@ -110,4 +111,19 @@
   mov eax, %1
   mov ebx, %2
   call _get_token
+%endmacro
+
+; Arguments
+;   1 - the current board
+;   2 - register or address containing the desired space
+; Result
+;   eax - boolean
+%macro is_valid_space 2
+  push dword %1
+  push dword %2
+  mov eax, [esp + 0x4]
+  mov ebx, [esp]
+  call _is_valid_space
+  add esp, 0x8
+  cmp eax, 0x1
 %endmacro
