@@ -6,3 +6,4 @@ section .text
   extern _is_tie
   extern _other_token
   extern _zero_board
+  extern _get_token

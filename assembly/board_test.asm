@@ -245,6 +245,22 @@ test_other_token_o:
   pop_board
   ret
 
+test_get_token_X_on_space_one:
+  push_board
+  set_space esp, 0x0, x_token
+  get_token esp, 0x0
+  assert_equal eax, x_token
+  pop_board
+  ret
+
+test_get_token_O_on_space_eight:
+  push_board
+  set_space esp, 0x8, o_token
+  get_token esp, 0x8
+  assert_equal eax, o_token
+  pop_board
+  ret
+
 main:
   call test_create_board
   call test_x_wins_row_0
@@ -267,5 +283,7 @@ main:
   call test_is_not_empty_space_1
   call test_other_token_x
   call test_other_token_o
+  call test_get_token_X_on_space_one
+  call test_get_token_O_on_space_eight
   print newline, newline_len
   system.exit system.success

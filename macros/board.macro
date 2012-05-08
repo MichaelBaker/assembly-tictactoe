@@ -100,3 +100,14 @@
   mov al, %1
   call _other_token
 %endmacro
+
+; Arguments
+;   1 - register containting  a pointer to a board
+;   2 - register containting a space(0-8)
+; Result
+;   eax - the token found at that space
+%macro get_token 2
+  mov eax, %1
+  mov ebx, %2
+  call _get_token
+%endmacro

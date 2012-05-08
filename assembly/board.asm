@@ -10,6 +10,7 @@ section .text
   global _is_tie
   global _other_token
   global _zero_board
+  global _get_token
 
 ; Arguments
 ;   eax - pointer to a board
@@ -159,4 +160,13 @@ _zero_board:
   mov dword [eax + 0x8], edx
 
   pop edx
+  ret
+
+; Arguments
+;   eax - pointer to a board
+;   ebx - space
+; Result
+;   eax - the token
+_get_token:
+  mov eax, [eax + ebx]
   ret
