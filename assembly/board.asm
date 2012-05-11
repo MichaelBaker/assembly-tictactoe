@@ -169,7 +169,11 @@ _zero_board:
 ; Result
 ;   eax - the token
 _get_token:
-  mov eax, [eax + ebx]
+  push edx
+  mov dl, [eax + ebx]
+  xor eax, eax
+  mov al, dl
+  pop edx
   ret
 
 ; Arguments

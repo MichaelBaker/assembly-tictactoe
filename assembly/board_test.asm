@@ -311,6 +311,42 @@ test_space_invalid_when_over_eight:
   pop ebp
   ret
 
+test_space_zero_valid_on_almost_full_board:
+  push_board
+
+  set_space esp, 0x1, x_token
+  set_space esp, 0x2, o_token
+  set_space esp, 0x3, o_token
+  set_space esp, 0x4, o_token
+  set_space esp, 0x5, x_token
+  set_space esp, 0x6, x_token
+  set_space esp, 0x7, x_token
+  set_space esp, 0x8, o_token
+
+  is_valid_space esp, 0x0
+
+  assert_equal eax, 0x1
+
+  pop_board
+  ret
+
+test_zero_board_works:
+  push_board
+
+  mov ecx, 0x0
+  mov eax, empty_token
+
+  .loop
+    xor eax, [esp + ecx]
+    cmp ecx, 0x8
+    inc ecx
+    jle .loop
+
+  assert_equal eax, empty_token
+
+  pop_board
+  ret
+
 main:
   call test_create_board
   call test_x_wins_row_0
@@ -338,5 +374,7 @@ main:
   call test_valid_space_is_empty
   call test_space_invalid_when_occupied
   call test_space_invalid_when_over_eight
+  call test_space_zero_valid_on_almost_full_board
+  call test_zero_board_works
   print newline, newline_len
   system.exit system.success
