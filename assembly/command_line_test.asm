@@ -35,8 +35,9 @@ test_string_to_board:
   mov eax, board_string
   mov ebx, esp
   call string_to_board
+  xor eax, eax
   mov al, [esp]
-  assert_equal al, x_token
+  assert_equal eax, x_token
   pop_board
   ret
 
