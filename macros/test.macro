@@ -1,5 +1,5 @@
 %macro assert_equal 2
-  cmp %1, %2
+  cmp dword %1, %2
   je ._assert_equal_success
   ._assert_equal_failure
     print failure_token, failure_token_len
