@@ -19,6 +19,14 @@ def test_filenames
   Binaries.map(&:first).select{ |filename| filename.end_with? "test" }
 end
 
+def non_test_filenames
+  Binaries.map(&:first).select{ |filename| !filename.end_with? "test" }
+end
+
+def silent_rm(files)
+  `rm #{files} 2> /dev/null`
+end
+
 compile "ai"
 compile "board"
 compile "board_test"
@@ -45,23 +53,31 @@ Binaries.each do |filename, dependecies|
   link_binary filename, dependecies
 end
 
-task :default => ["main", "clean"]
+task :default => ["play"]
 
-task "clean" do
-  `rm *.o`
-end
+namespace "clean" do
+  task "objects" do
+    silent_rm "*.o"
+  end
 
-task "clean:test" => ["clean"] do
-  `rm #{test_filenames.join(' ')}`
-end
+  task "test" => ["clean:objects"] do
+    silent_rm test_filenames.join(' ')
+  end
 
-task "clean:all" => ["clean", "clean:test"] do
-  `rm ai`
-  `rm tictactoe`
-  `rm main`
+  task "binaries" do
+    silent_rm non_test_filenames.join(' ')
+  end
+
+  task "all" => ["clean:objects", "clean:test", "clean:binaries"]
 end
 
 task "test" => ["command_line_test", "board_test", "negamax_test", "tictactoe_test"] do
   system test_filenames.map{ |filename| "./" + filename }.join(" && ")
   Rake::Task["clean:test"].invoke
+end
+
+task "play" => ["main"] do
+  system "./main"
+  Rake::Task["clean:objects"].invoke
+  `rm main`
 end
