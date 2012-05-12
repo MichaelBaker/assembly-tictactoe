@@ -57,6 +57,8 @@ end
 
 task "clean:all" => ["clean", "clean:test"] do
   `rm ai`
+  `rm tictactoe`
+  `rm main`
 end
 
 task "test" => ["command_line_test", "board_test", "negamax_test", "tictactoe_test"] do
