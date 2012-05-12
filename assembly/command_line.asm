@@ -1,10 +1,20 @@
+%include 'board.h'
 %include 'board.macro'
+%include 'system.h'
+%include 'system.macro'
+
+section .data
+  template_line_one   db  "012 | "
+  template_line_two   db  "345 | "
+  template_line_three db  "678 | "
+  template_line_len   equ $-template_line_three
 
 section .text
   global char_to_token
   global string_to_board
   global token_to_char
   global board_to_string
+  global print_board
 
 ; Arguments
 ;   eax - the character to convert
@@ -91,4 +101,40 @@ board_to_string:
   ; Restore the caller's registers
   pop edx
   pop ecx
+  ret
+
+; Arguments
+;   eax - pointer to board
+print_board:
+  push ebp
+  mov ebp, esp
+
+  push_board ; Local board    [ebp - 0xc]
+  push eax   ; Original board [ebp - 0x10]
+
+  lea eax, [ebp - 0xc]
+  copy_board eax, [ebp - 0x10]
+
+  lea eax, [ebp - 0xc]
+  call board_to_string
+
+  ; Print first line
+  print template_line_one, template_line_len
+  lea eax, [ebp - 0xc]
+  print eax, 0x3
+  print newline, newline_len
+
+  ; Print second line
+  print template_line_two, template_line_len
+  lea eax, [ebp - 0x9]
+  print eax, 0x3
+  print newline, newline_len
+
+  ; Print third line
+  print template_line_three, template_line_len
+  lea eax, [ebp - 0x6]
+  print eax, 0x3
+  print newline, newline_len
+
+  leave
   ret

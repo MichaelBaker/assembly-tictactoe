@@ -14,8 +14,12 @@ section .text
   je .game_over
 %endmacro
 
+; A pointer to the current board need to be in eax
+; The token to be placed needs to be in ebx
 %macro player_turn 3
   .%1
+    mov eax, [ebp - 0x4]
+    mov ebx, %3
     call %2
     mov edx, eax ; Save the move
     is_valid_space [ebp - 0x4], edx
@@ -31,7 +35,7 @@ section .text
   push eax ; Save the pointer to the board [ebp - 0x4]
   push ebx ; Save the pointer to the player one procedure [ebp - 0x8]
   push edx ; Save the pointer to end_game [ebp - 0xc]
-  push ecx ; Save the pointer to the plater two procedure [ebp - 0x10]
+  push ecx ; Save the pointer to the player two procedure [ebp - 0x10]
 %endmacro
 
 perform_turn:
@@ -49,15 +53,18 @@ perform_turn:
       cmp eax, 0x1
       jne .x_wins
       mov eax, empty_token
+      mov ebx, [ebp - 0x4]
       jmp .callback
     .x_wins
       x_wins [ebp - 0x4]
       cmp eax, 0x1
       jne .o_wins
       mov eax, x_token
+      mov ebx, [ebp - 0x4]
       jmp .callback
     .o_wins
       mov eax, o_token
+      mov ebx, [ebp - 0x4]
     .callback
     call [ebp - 0xc]
 

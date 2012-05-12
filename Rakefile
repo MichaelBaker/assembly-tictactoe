@@ -24,6 +24,7 @@ compile "board"
 compile "board_test"
 compile "command_line"
 compile "command_line_test"
+compile "main"
 compile "negamax"
 compile "negamax_test"
 compile "system"
@@ -36,14 +37,15 @@ Binaries = [
   ["command_line_test", %w[command_line_test.o system.o board.o negamax.o command_line.o]],
   ["negamax_test",      %w[negamax_test.o system.o board.o negamax.o]],
   ["tictactoe_test",    %w[tictactoe_test.o tictactoe.o system.o board.o]],
-  ["tictactoe",         %w[tictactoe.o board.o]]
+  ["tictactoe",         %w[tictactoe.o board.o]],
+  ["main",              %w[main.o tictactoe.o board.o system.o command_line.o negamax.o]]
 ]
 
 Binaries.each do |filename, dependecies|
   link_binary filename, dependecies
 end
 
-task :default => ["ai", "clean"]
+task :default => ["main", "clean"]
 
 task "clean" do
   `rm *.o`

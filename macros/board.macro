@@ -87,8 +87,7 @@
   mov  eax, [esp + 0x4]
   mov  ebx, [esp]
   call _copy_board
-  pop ebx
-  pop ebx
+  add esp, 0x8
   pop ebx
   pop eax
 %endmacro
