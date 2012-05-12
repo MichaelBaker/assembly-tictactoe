@@ -7,8 +7,6 @@
 %include 'tictactoe.h'
 
 section .data
-  game_over_message     db  "Game Over"
-  game_over_message_len equ $-game_over_message
   prompt                db  "Enter your move: "
   prompt_len            equ $-prompt
   x_wins_message        db  "~ X Wins ~"
@@ -21,54 +19,51 @@ section .data
 section .text
   global main
 
-; Read a move from the player
+flush_stdin:
+  push eax
+  push ebp
+  mov ebp, esp
+
+  ; Read characters until a newline is read
+  .next_char
+    call read_character
+    cmp  eax, 0xa
+    jne .next_char
+
+  leave
+  pop eax
+  ret
+
+read_character:
+  push ebp
+  mov ebp, esp
+  push dword 0x0 ; Buffer [ebp - 0x4]
+
+  ; Read Character
+  lea eax, [ebp - 0x4]
+  push dword 0x1        ; Number of bytes to read
+  push eax              ; Pointer to a buffer to read into
+  push dword 0x0        ; File descriptor to read from 
+  system.systemcall 0x3 ; Perform system call
+  add esp, 0xc          ; Clean up
+  xor eax, eax
+  mov al, [ebp - 0x4]
+
+  leave
+  ret
+
+; Get move from a human player
 player_one:
   push ebp
   mov ebp, esp
   push dword 0x0 ; Input buffer [ebp - 0x4]
 
-  ; Prompt user
-  push eax
-  push ebx
-  print prompt, prompt_len
-  pop ebx
-  pop eax
-
-  ; Read first character from the user
-  push eax
-  push ebx
-  push dword 0x1
-  lea eax, [ebp - 0x4]
-  push eax
-  push dword 0x0
-  push dword 0x0
-  mov eax, 0x3
-  int 0x80
-  add esp, 0x10
-  pop ebx
-  pop eax
-
-  ; Flush the rest of the characters from stdin
-  .next_char
-    push eax
-    push ebx
-    push dword 0x1
-    lea eax, [ebp - 0x5]
-    push eax
-    push dword 0x0
-    push dword 0x0
-    mov eax, 0x3
-    int 0x80
-    add esp, 0x10
-    cmp byte [ebp - 0x5], 0xa
-    jne .next_char
-  pop ebx
-  pop eax
-
-  ; Convert to a number
-  xor eax, eax
-  mov al, [ebp - 0x4]
-  sub eax, 0x30
+  print prompt, prompt_len ; Prompt user
+  call read_character      ; Read first character from the user
+  push eax                 ; Save the user's choice
+  call flush_stdin         ; Discard the remaining characters
+  pop eax                  ; Recover user's choice
+  sub eax, 0x30            ; Convert user's input to a number
 
   leave
   ret
@@ -80,17 +75,20 @@ player_two:
   ret
 
 end_game:
+  ; Print a newline
   push eax
   push ebx
   print newline, newline_len
   pop ebx
   pop eax
 
+  ; Print the final board
   push eax
   mov eax, ebx
   call print_board
   pop eax
 
+  ; Determine game-over message
   cmp eax, empty_token
   je .tie
   cmp eax, x_token
@@ -117,12 +115,17 @@ main:
   push_board ; [ebp - 0xc]
 
   .loop
+    ; Print the board
     lea eax, [ebp - 0xc]
     call print_board
+
+    ; Let both players place a token
     lea eax, [ebp - 0xc]
     mov ebx, player_one
     mov ecx, player_two
     mov edx, end_game
     call perform_turn
+
+    ; Go to next turn
     print newline, newline_len
     jmp .loop
