@@ -4,10 +4,12 @@
 %include 'system.macro'
 
 section .data
-  template_line_one   db  "012 | "
-  template_line_two   db  "345 | "
-  template_line_three db  "678 | "
+  template_line_one   db  "0 1 2 | "
+  template_line_two   db  "3 4 5 | "
+  template_line_three db  "6 7 8 | "
   template_line_len   equ $-template_line_three
+  space               db  " "
+  space_len           equ $-space
 
 section .text
   global char_to_token
@@ -105,6 +107,23 @@ board_to_string:
 
 ; Arguments
 ;   eax - pointer to board
+%macro print_row 1
+  lea eax, %1
+  print eax, 0x1
+  print space, space_len
+
+  lea eax, %1
+  inc eax
+  print eax, 0x1
+  print space, space_len
+
+  lea eax, %1
+  add eax, 0x2
+  print eax, 0x1
+
+  print newline, newline_len
+%endmacro
+
 print_board:
   push ebp
   mov ebp, esp
@@ -120,21 +139,15 @@ print_board:
 
   ; Print first line
   print template_line_one, template_line_len
-  lea eax, [ebp - 0xc]
-  print eax, 0x3
-  print newline, newline_len
+  print_row [ebp - 0xc]
 
   ; Print second line
   print template_line_two, template_line_len
-  lea eax, [ebp - 0x9]
-  print eax, 0x3
-  print newline, newline_len
+  print_row [ebp - 0x9]
 
   ; Print third line
   print template_line_three, template_line_len
-  lea eax, [ebp - 0x6]
-  print eax, 0x3
-  print newline, newline_len
+  print_row [ebp - 0x6]
 
   leave
   ret

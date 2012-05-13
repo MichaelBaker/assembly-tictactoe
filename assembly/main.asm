@@ -9,11 +9,11 @@
 section .data
   prompt                db  "Enter your move: "
   prompt_len            equ $-prompt
-  x_wins_message        db  "~ X Wins ~"
+  x_wins_message        db  " ~ X Wins ~"
   x_wins_message_len    equ $-x_wins_message
-  o_wins_message        db  "~ O Wins ~"
+  o_wins_message        db  " ~ O Wins ~"
   o_wins_message_len    equ $-o_wins_message
-  tie_message           db  " ~ Tie ~"
+  tie_message           db  "   ~ Tie ~"
   tie_message_len       equ $-tie_message
 
 section .text
