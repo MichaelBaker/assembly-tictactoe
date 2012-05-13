@@ -33,7 +33,7 @@ end
 
 compile "board"
 compile "command_line"
-compile "main"
+compile "command_line_ui"
 compile "negamax"
 compile "system"
 compile "tictactoe"
@@ -49,7 +49,7 @@ Binaries = [
   ["negamax_test",      %w[negamax_test.o system.o board.o negamax.o]],
   ["tictactoe_test",    %w[tictactoe_test.o tictactoe.o system.o board.o]],
   ["tictactoe",         %w[tictactoe.o board.o]],
-  ["main",              %w[main.o tictactoe.o board.o system.o command_line.o negamax.o]]
+  ["command_line_ui",   %w[command_line_ui.o tictactoe.o board.o system.o command_line.o negamax.o]]
 ]
 
 Binaries.each do |filename, dependecies|
@@ -85,8 +85,8 @@ task "test" => ["command_line_test", "board_test", "negamax_test", "tictactoe_te
 end
 
 desc "Compile the game and run it"
-task "play" => ["main"] do
-  system "./main"
+task "play" => ["command_line_ui"] do
+  system "./command_line_ui"
   Rake::Task["clean:objects"].invoke
-  `rm main`
+  `rm command_line_ui`
 end
