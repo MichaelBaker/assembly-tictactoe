@@ -1,7 +1,11 @@
-def compile(filename)
-  file "#{filename}.o" => ["assembly/#{filename}.asm"] do
-    `nasm -i macros/ -i headers/ -O1 -f macho assembly/#{filename}.asm -o #{filename}.o`
+def compile(filename, folder = "assembly")
+  file "#{filename}.o" => ["#{folder}/#{filename}.asm"] do
+    `nasm -i macros/ -i headers/ -O1 -f macho #{folder}/#{filename}.asm -o #{filename}.o`
   end
+end
+
+def compile_test(filename)
+  compile(filename, "tests")
 end
 
 def link_binary(filename, dependencies)
@@ -28,15 +32,16 @@ def silent_rm(files)
 end
 
 compile "board"
-compile "board_test"
 compile "command_line"
-compile "command_line_test"
 compile "main"
 compile "negamax"
-compile "negamax_test"
 compile "system"
 compile "tictactoe"
-compile "tictactoe_test"
+
+compile_test "board_test"
+compile_test "command_line_test"
+compile_test "negamax_test"
+compile_test "tictactoe_test"
 
 Binaries = [
   ["board_test",        %w[board_test.o system.o board.o]],
