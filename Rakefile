@@ -27,7 +27,6 @@ def silent_rm(files)
   `rm #{files} 2> /dev/null`
 end
 
-compile "ai"
 compile "board"
 compile "board_test"
 compile "command_line"
@@ -40,7 +39,6 @@ compile "tictactoe"
 compile "tictactoe_test"
 
 Binaries = [
-  ["ai",                %w[ai.o command_line.o system.o board.o negamax.o]],
   ["board_test",        %w[board_test.o system.o board.o]],
   ["command_line_test", %w[command_line_test.o system.o board.o negamax.o command_line.o]],
   ["negamax_test",      %w[negamax_test.o system.o board.o negamax.o]],
