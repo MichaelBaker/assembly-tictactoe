@@ -56,26 +56,32 @@ end
 task :default => ["play"]
 
 namespace "clean" do
+  desc "Delete .o files"
   task "objects" do
     silent_rm "*.o"
   end
 
+  desc "Delete test binaries"
   task "test" => ["clean:objects"] do
     silent_rm test_filenames.join(' ')
   end
 
+  desc "Delete non-test binaries"
   task "binaries" do
     silent_rm non_test_filenames.join(' ')
   end
 
+  desc "Delete all binaries and .o files"
   task "all" => ["clean:objects", "clean:test", "clean:binaries"]
 end
 
+desc "Compile and run the test suite"
 task "test" => ["command_line_test", "board_test", "negamax_test", "tictactoe_test"] do
   system test_filenames.map{ |filename| "./" + filename }.join(" && ")
   Rake::Task["clean:test"].invoke
 end
 
+desc "Compile the game and run it"
 task "play" => ["main"] do
   system "./main"
   Rake::Task["clean:objects"].invoke
